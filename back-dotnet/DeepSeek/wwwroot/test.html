@@ -1,0 +1,31 @@
+﻿!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deepseek Stream</title>
+</head>
+<body>
+    <div id="output"></div>
+
+    <script>
+        async function fetchStream() {
+            const response = await fetch('/api/deepseek/message',{method: 'POST'});
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            const output = document.getElementById('output');
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                const chunk = decoder.decode(value, { stream: true });
+               var models=JSON.parse(chunk);
+               console.log(models);
+                output.innerHTML += models.response;
+            }
+        }
+
+        fetchStream();
+    </script>
+</body>
+</html>
